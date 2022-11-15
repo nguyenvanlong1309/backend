@@ -7,6 +7,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class UserModel {
 
+    private String id;
+
     @NotBlank(message = "Tên đăng nhập không được trống")
     private String username;
 
@@ -17,4 +19,10 @@ public class UserModel {
     private String password;
 
     private String role = "USER";
+
+    private String phone;
+    private String address;
+    private String email;
+
+    private Integer status;
 }

@@ -1,9 +1,10 @@
 package com.tuthien.backend.config;
 
 import com.tuthien.backend.filter.JwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -12,22 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableWebMvc
-public class SecurityConfig implements WebMvcConfigurer {
+@RequiredArgsConstructor
+public class SecurityConfig {
 
-    @Autowired
-    private JwtFilter jwtFilter;
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedMethods("*");
-    }
+    private final JwtFilter jwtFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -40,6 +32,10 @@ public class SecurityConfig implements WebMvcConfigurer {
         httpSecurity.cors().and().csrf().disable()
                 .authorizeHttpRequests()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/cities/**").permitAll()
+                .antMatchers("/images/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/projects", "/projects/{projectId}").permitAll()
+                .antMatchers(HttpMethod.POST, "/donates/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
