@@ -48,4 +48,10 @@ public class Donate {
 
     @Column(name = "comment")
     private String comment;
+
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "type")
+    private Integer type;
 }

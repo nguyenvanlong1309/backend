@@ -1,9 +1,7 @@
 package com.tuthien.backend.utils;
 
 import com.tuthien.backend.entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,9 +24,13 @@ public class JwtUtils {
     }
 
     public boolean isExpiredToken(String jwt) {
-        Claims claims = this.getClaims(jwt);
-        Date expiration = claims.getExpiration();
-        return expiration.before(new Date());
+        try {
+            Claims claims = this.getClaims(jwt);
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date());
+        } catch (ExpiredJwtException ex) {
+            return true;
+        }
     }
 
     private Claims getClaims(String jwt) {

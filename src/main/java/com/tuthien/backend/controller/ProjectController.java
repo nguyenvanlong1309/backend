@@ -20,6 +20,11 @@ public class ProjectController {
         return ResponseEntity.ok(this.projectService.findAll(limit));
     }
 
+    @GetMapping("/pending-project")
+    public ResponseEntity findPendingProject() {
+        return ResponseEntity.ok(this.projectService.getPendingProject());
+    }
+
     @GetMapping("/{projectId}")
     public ResponseEntity findById(@PathVariable String projectId) {
         return ResponseEntity.ok(this.projectService.findById(projectId));

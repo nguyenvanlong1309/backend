@@ -7,7 +7,7 @@ import com.tuthien.backend.entity.User;
 import com.tuthien.backend.model.ResponseModel;
 import com.tuthien.backend.model.UserModel;
 import com.tuthien.backend.model.UserResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,23 +16,32 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public List<UserResponse> findAll() {
+        return this.userDAO.findAll().stream()
+                .filter(_user -> !"ADMIN".equals(_user.getRole()))
+                .map(_user -> this.objectMapper.convertValue(_user, UserResponse.class))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -84,6 +93,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         user.setStatus(UserStatus.ACTIVE.getStatus());
         user.setRole("USER");
+        user.setBalance(new BigDecimal("0"));
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null);
     }
@@ -91,8 +101,10 @@ public class UserService implements UserDetailsService {
     public UserResponse updateInfo(UserModel userModel) {
         User _user = this.userDAO.findByUsername(userModel.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException(userModel.getUsername() + " không tồn tại"));
+        userModel.setId(_user.getId());
         userModel.setPassword(_user.getPassword());
         userModel.setStatus(_user.getStatus());
+        userModel.setUsername(_user.getUsername());
 
         if (StringUtils.hasText(userModel.getPhone())) {
             this.userDAO.findByPhone(userModel.getPhone())
@@ -111,7 +123,19 @@ public class UserService implements UserDetailsService {
         }
 
         User user = this.objectMapper.convertValue(userModel, User.class);
+        User sessionUser = this.getSessionUser();
+        if (!"ADMIN".equals(sessionUser.getRole())) {
+            user.setRole(_user.getRole());
+        }
         user = this.userDAO.save(user);
         return this.objectMapper.convertValue(user, UserResponse.class);
+    }
+
+    @Transactional
+    public ResponseModel changeStatusUser(String username, UserStatus userStatus) {
+        User user = this.getUserByUsername(username);
+        user.setStatus(userStatus.getStatus());
+        this.userDAO.save(user);
+        return new ResponseModel(HttpStatus.OK, this.objectMapper.convertValue(user, UserResponse.class), "Thành công");
     }
 }

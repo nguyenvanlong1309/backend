@@ -38,8 +38,7 @@ public class ProjectService {
         if (Objects.nonNull(limit)) {
             pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
         }
-        List<Project> all = this.projectDAO.findApprovedProject(pageable);
-        return all.stream().map(pj -> this.objectMapper.convertValue(pj, ProjectModel.class)).collect(Collectors.toList());
+        return  this.projectDAO.findApprovedProject(pageable);
     }
 
     public ProjectModel findById(String projectId) {
@@ -49,7 +48,11 @@ public class ProjectService {
 
     public List<ProjectModel> findMyProject() {
         User sessionUser = this.userService.getSessionUser();
-        return this.projectDAO.findByCreatedBy(sessionUser.getUsername()).stream()
+        return this.findProjectByUsername(sessionUser.getUsername());
+    }
+
+    public List<ProjectModel> findProjectByUsername(String username) {
+        return this.projectDAO.findByCreatedBy(username).stream()
                 .map(pj -> this.objectMapper.convertValue(pj, ProjectModel.class))
                 .peek(pjm -> {
                     pjm.setTotal(this.donateDAO.sumTotalByProjectId(pjm.getId()));
@@ -84,5 +87,25 @@ public class ProjectService {
         project.setCreatedBy(user.getUsername());
         this.projectDAO.save(project);
         return new ResponseModel<>(HttpStatus.OK, null, "Thanh cong");
+    }
+
+    public List<ProjectModel> getPendingProject() {
+        return this.projectDAO.findPendingProject();
+    }
+
+    public ResponseModel approveProject(String projectId) {
+        Project project = this.projectDAO.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy project"));
+        if (project.getStatus() != ProjectStatus.PENDING.getStatus()) {
+            throw new IllegalArgumentException("Không thể duyệt project này.");
+        }
+
+        if (new Date().after(project.getEndDate())) {
+            throw new IllegalArgumentException("Dự án đã kết thúc");
+        }
+
+        project.setStatus(ProjectStatus.DOING.getStatus());
+        this.projectDAO.save(project);
+        return new ResponseModel(HttpStatus.OK, project, "Thành công");
     }
 }

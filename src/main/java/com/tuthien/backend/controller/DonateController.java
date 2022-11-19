@@ -7,6 +7,7 @@ import com.tuthien.backend.service.DonateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +22,22 @@ public class DonateController {
         return ResponseEntity.ok(donateResponseModel);
     }
 
+    @PostMapping("/business")
+    public ResponseEntity donateBusiness(@RequestPart DonateModel donate, @RequestPart(required = false) MultipartFile avatar) {
+        ResponseModel<Donate> donateResponseModel = this.donateService.donateBusiness(donate, avatar);
+        return ResponseEntity.ok(donateResponseModel);
+    }
+
     @GetMapping("/mine")
     public ResponseEntity getMyDonate() {
         return ResponseEntity.ok(this.donateService.getMyDonate());
+    }
+
+    @GetMapping("/top-donate")
+    public ResponseEntity getTopPersonalDonate(
+            @RequestParam Integer type,
+            @RequestParam(defaultValue = "10") Integer limit)
+    {
+        return ResponseEntity.ok(this.donateService.getTopDonate(type, limit));
     }
 }

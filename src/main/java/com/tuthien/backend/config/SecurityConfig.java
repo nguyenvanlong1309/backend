@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .antMatchers("/images/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/projects", "/projects/{projectId}").permitAll()
                 .antMatchers(HttpMethod.POST, "/donates/**").permitAll()
+                .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()

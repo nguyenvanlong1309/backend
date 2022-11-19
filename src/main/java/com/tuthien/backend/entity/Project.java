@@ -3,6 +3,7 @@ package com.tuthien.backend.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -46,4 +47,10 @@ public class Project {
 
     @Column(name = "status")
     private Integer status;
+
+    @Column(name = "type")
+    private Integer type;
+
+    @Column(name = "money")
+    private BigDecimal money;
 }

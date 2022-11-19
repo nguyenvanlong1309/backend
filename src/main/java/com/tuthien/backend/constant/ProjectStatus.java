@@ -9,10 +9,9 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum ProjectStatus {
 
-    PENDING(-1, "Chờ duyệt"),
-    INDEFINITE(0, "Không thời hạn"),
-    DOING(2, "Đang vận động"),
-    DONE(1, "Đã hoàn thành");
+    PENDING(0, "Chờ duyệt"),
+    DONE(1, "Đã hoàn thành"),
+    DOING(2, "Đang vận động");
 
     final int status;
     final String desc;

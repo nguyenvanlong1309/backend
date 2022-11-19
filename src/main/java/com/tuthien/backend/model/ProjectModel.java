@@ -1,8 +1,10 @@
 package com.tuthien.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tuthien.backend.constant.ProjectStatus;
 import com.tuthien.backend.entity.Project;
+import com.tuthien.backend.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.Objects;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class ProjectModel implements Serializable {
     private String id;
     private String title;
@@ -29,9 +32,29 @@ public class ProjectModel implements Serializable {
     private Integer cityId;
     private String description;
     private BigDecimal total;
+    private Integer type;
+    private BigDecimal money;
 
     @JsonIgnore
     private MultipartFile avatarFile;
+    private String createdByName;
+
+    public ProjectModel(Project project, User user) {
+        this.createdByName = user.getFullName();
+        this.id = project.getId();
+        this.title = project.getTitle();
+        this.content = project.getContent();
+        this.createdBy = project.getCreatedBy();
+        this.createdDate = project.getCreatedDate();
+        this.startDate = project.getStartDate();
+        this.endDate = project.getEndDate();
+        this.status = project.getStatus();
+        this.avatar = project.getAvatar();
+        this.cityId = project.getCityId();
+        this.description = project.getDescription();
+        this.money = project.getMoney();
+        this.type = project.getType();
+    }
 
     public String getStatusName() {
         if (Objects.isNull(this.status)) return "";

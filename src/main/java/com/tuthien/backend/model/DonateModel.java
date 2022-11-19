@@ -30,6 +30,8 @@ public class DonateModel implements Serializable {
     private Integer methodDonate;
     private String comment;
     private String title;
+    private String image;
+    private Integer type;
 
     public DonateModel(Donate donate, Project project) {
         this.id = donate.getId();
@@ -44,6 +46,8 @@ public class DonateModel implements Serializable {
         this.email = donate.getEmail();
         this.methodDonate = donate.getMethodDonate();
         this.comment = donate.getComment();
+        this.image = donate.getImage();
+        this.type = donate.getType();
         this.title = project.getTitle();
     }
 }
