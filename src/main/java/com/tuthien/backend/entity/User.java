@@ -40,7 +40,4 @@ public class User {
 
     @Column(name = "status")
     private Integer status;
-
-    @Column(name = "balance")
-    private BigDecimal balance;
 }

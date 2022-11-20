@@ -1,5 +1,6 @@
 package com.tuthien.backend.controller.admin;
 
+import com.tuthien.backend.model.StatisticModel;
 import com.tuthien.backend.model.UserModel;
 import com.tuthien.backend.service.DonateService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,11 @@ public class AdminDonateController {
     @GetMapping
     public ResponseEntity findAll() {
         return ResponseEntity.ok(this.donateService.findAll());
+    }
+
+    @PostMapping("/statistic")
+    public ResponseEntity statisticDonate(@RequestBody StatisticModel statisticModel) {
+        return ResponseEntity.ok(this.donateService.statisticDonate(statisticModel));
     }
 
     @PostMapping("/username")

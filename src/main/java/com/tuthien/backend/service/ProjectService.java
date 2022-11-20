@@ -72,6 +72,9 @@ public class ProjectService {
         if (Objects.nonNull(projectModel.getId())) {
             Project project = this.projectDAO.findById(projectModel.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+            if (new Date().before(project.getEndDate())) {
+                throw new IllegalArgumentException("Dự án đã hết hạn");
+            }
             projectModel.setCreatedDate(project.getCreatedDate());
             projectModel.setStatus(project.getStatus());
             if (Objects.isNull(projectModel.getAvatar())) {

@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tuthien.backend.constant.DonateType;
 import com.tuthien.backend.dao.DonateDAO;
 import com.tuthien.backend.dao.ProjectDAO;
+import com.tuthien.backend.dao.RegionDAO;
 import com.tuthien.backend.entity.Donate;
 import com.tuthien.backend.entity.User;
 import com.tuthien.backend.model.DonateModel;
+import com.tuthien.backend.model.DonateStatistic;
 import com.tuthien.backend.model.ResponseModel;
+import com.tuthien.backend.model.StatisticModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class DonateService {
     private final UserService userService;
     private final ProjectDAO projectDAO;
     private final IOService ioService;
+    private final RegionDAO regionDAO;
 
     public List<DonateModel> findAll() {
         return this.donateDAO.findAllDonate();
@@ -86,4 +91,11 @@ public class DonateService {
         return this.donateDAO.findTopPersonalDonate(type, pageable);
     }
 
+    public List<DonateStatistic> statisticDonate(StatisticModel statisticModel) {
+        return this.regionDAO.findAll().stream()
+                .map(region -> new DonateStatistic(region.getId(), region.getName(), null))
+                .peek(region -> {
+                    region.setData(this.donateDAO.statisticDonate(statisticModel.getYear(), region.getRegionId()));
+                }).collect(Collectors.toList());
+    }
 }

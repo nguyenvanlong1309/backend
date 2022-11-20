@@ -69,4 +69,10 @@ public class AuthController {
         ResponseModel responseModel = this.userService.regisUser(userModel, bindingResult);
         return ResponseEntity.status(responseModel.getStatus()).body(responseModel);
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity changePassword(@RequestBody ChangePasswordModel changePasswordModel) {
+        ResponseModel responseModel = this.userService.changePassword(changePasswordModel);
+        return ResponseEntity.ok(responseModel);
+    }
 }

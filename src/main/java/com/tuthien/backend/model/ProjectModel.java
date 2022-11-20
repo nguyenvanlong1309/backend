@@ -40,7 +40,11 @@ public class ProjectModel implements Serializable {
     private String createdByName;
 
     public ProjectModel(Project project, User user) {
+        this(project);
         this.createdByName = user.getFullName();
+    }
+
+    public ProjectModel(Project project) {
         this.id = project.getId();
         this.title = project.getTitle();
         this.content = project.getContent();

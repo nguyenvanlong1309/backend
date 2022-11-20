@@ -6,17 +6,17 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "CITY")
-public class City {
+@Table(name = "MAP")
+public class Map {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "path")
+    private String path;
 
-    @Column(name = "region_id")
-    private Long regionId;
+    @Column(name = "city_id")
+    private Integer cityId;
 }

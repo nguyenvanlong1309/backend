@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tuthien.backend.constant.UserStatus;
 import com.tuthien.backend.dao.UserDAO;
 import com.tuthien.backend.entity.User;
+import com.tuthien.backend.model.ChangePasswordModel;
 import com.tuthien.backend.model.ResponseModel;
 import com.tuthien.backend.model.UserModel;
 import com.tuthien.backend.model.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -93,7 +96,6 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         user.setStatus(UserStatus.ACTIVE.getStatus());
         user.setRole("USER");
-        user.setBalance(new BigDecimal("0"));
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null);
     }
@@ -137,5 +139,25 @@ public class UserService implements UserDetailsService {
         user.setStatus(userStatus.getStatus());
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, this.objectMapper.convertValue(user, UserResponse.class), "Thành công");
+    }
+
+    @Transactional
+    public ResponseModel changePassword(ChangePasswordModel changePasswordModel) {
+        User currentUser = this.getSessionUser();
+        boolean matches = this.passwordEncoder.matches(changePasswordModel.getCurrentPassword(), currentUser.getPassword());
+        if (!matches) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không đúng");
+        }
+        String newPasswordEncoded = this.passwordEncoder.encode(changePasswordModel.getNewPassword());
+        currentUser.setPassword(newPasswordEncoded);
+        this.userDAO.save(currentUser);
+
+        UserDetails userDetails = this.loadUserByUsername(currentUser.getUsername());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities()
+        );
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authenticationToken);
+        return new ResponseModel(HttpStatus.OK, null, "Th ành công");
     }
 }
