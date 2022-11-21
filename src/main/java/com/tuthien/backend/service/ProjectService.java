@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -72,7 +71,7 @@ public class ProjectService {
         if (Objects.nonNull(projectModel.getId())) {
             Project project = this.projectDAO.findById(projectModel.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
-            if (new Date().before(project.getEndDate())) {
+            if (Objects.nonNull(project.getEndDate()) && new Date().before(project.getEndDate())) {
                 throw new IllegalArgumentException("Dự án đã hết hạn");
             }
             projectModel.setCreatedDate(project.getCreatedDate());

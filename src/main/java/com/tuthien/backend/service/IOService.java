@@ -18,6 +18,12 @@ public class IOService {
 
     public Optional<String> saveImageToStore(MultipartFile file) {
         try {
+
+            File imageStore = new File(this.imageStoreUrl);
+            if (!imageStore.exists()) {
+                imageStore.mkdirs();
+            }
+
             File f = new File(this.imageStoreUrl  + file.getOriginalFilename());
             file.transferTo(f);
             return Optional.of(file.getOriginalFilename());
