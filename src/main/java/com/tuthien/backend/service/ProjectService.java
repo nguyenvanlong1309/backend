@@ -102,7 +102,7 @@ public class ProjectService {
             throw new IllegalArgumentException("Không thể duyệt project này.");
         }
 
-        if (new Date().after(project.getEndDate())) {
+        if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
             throw new IllegalArgumentException("Dự án đã kết thúc");
         }
 

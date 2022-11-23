@@ -30,14 +30,23 @@ public interface DonateDAO extends JpaRepository<Donate, Long> {
             " WHERE d.projectId = ?1" +
             " ORDER BY d.createdDate DESC")
     List<DonateModel> findDonateByProject(String projectId);
+
     @Query(nativeQuery = true,
-            value = "SELECT IF(mode = 0, '*********', public_name) publicName, sum(money) total, count(1) count, DATE_FORMAT(created_date, '%d/%m/%Y') createdDate" +
+            value = "SELECT IF(mode = 1, '*********', public_name) publicName, sum(money) total, count(1) count, DATE_FORMAT(created_date, '%d/%m/%Y') createdDate" +
+            " FROM DONATE" +
+            " WHERE (?1 IS NULL OR project_id = ?1)" +
+            " GROUP BY publicName, phone, email, createdDate" +
+            " ORDER BY total DESC")
+    List<Map<String, Object>> findListDonate(String projectId);
+
+    @Query(nativeQuery = true,
+            value = "SELECT IF(mode = 1, '*********', public_name) publicName, sum(money) total, count(1) count" +
             " FROM DONATE" +
             " WHERE (?1 IS NULL OR type = ?1)" +
             " AND (?2 IS NULL OR project_id = ?2)" +
-            " GROUP BY publicName, phone, email, createdDate" +
+            " GROUP BY publicName, phone, email" +
             " ORDER BY total DESC")
-    List<Map<String, Object>> findTopPersonalDonate(Integer type, String projectId, Pageable pageable);
+    List<Map<String, Object>> findTopPersonalDonate2(Integer type, String projectId, Pageable pageable);
 
     @Query("SELECT new com.tuthien.backend.model.StatisticModel( YEAR(d.createdDate), MONTH(d.createdDate), SUM(d.money) )" +
             " FROM Donate d" +

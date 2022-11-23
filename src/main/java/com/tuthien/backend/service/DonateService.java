@@ -94,12 +94,17 @@ public class DonateService {
         return new ResponseModel<>(HttpStatus.OK, donate, "Thành công");
     }
 
-    public List<Map<String, Object>> getTopDonate(Integer type, Integer limit, String projectId) {
+    public List<Map<String, Object>> getTopDonate(String projectId) {
+        return this.donateDAO.findListDonate(projectId);
+    }
+
+
+    public List<Map<String, Object>> getTopDonate2(Integer type, Integer limit, String projectId) {
         Pageable pageable = null;
         if (Objects.nonNull(limit)) {
             pageable = PageRequest.of(0, limit);
         }
-        return this.donateDAO.findTopPersonalDonate(type, projectId, pageable);
+        return this.donateDAO.findTopPersonalDonate2(type, projectId, pageable);
     }
 
     public List<DonateStatistic> statisticDonate(StatisticModel statisticModel) {
@@ -137,7 +142,7 @@ public class DonateService {
         timesCell.setCellValue("Số lần");
 
 
-        List<Map<String, Object>> topDonate = this.getTopDonate(null, null, donateModel.getProjectId());
+        List<Map<String, Object>> topDonate = this.getTopDonate(donateModel.getProjectId());
 
         IntStream.range(0, topDonate.size())
                 .forEach(index -> {
