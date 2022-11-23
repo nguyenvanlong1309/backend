@@ -1,11 +1,68 @@
 use TuThien;
 
+create table if not exists REGION
+(
+    id   int auto_increment
+    primary key,
+    name varchar(255) charset utf8mb3 null
+    );
+
 create table if not exists CITY
 (
     id        int auto_increment
     primary key,
     name      varchar(100) charset utf8mb3 null,
-    region_id int                          null
+    region_id int                          null,
+    constraint CITY_REGION_id_fk
+    foreign key (region_id) references REGION (id)
+    );
+
+create table if not exists MAP
+(
+    id      int auto_increment
+    primary key,
+    path    longtext null,
+    city_id int      null,
+    constraint MAP_CITY_id_fk
+    foreign key (city_id) references CITY (id)
+    );
+
+create table if not exists USER
+(
+    id        varchar(255)                 not null
+    primary key,
+    username  varchar(255)                 null,
+    password  text                         null,
+    full_name varchar(255) charset utf8mb3 null,
+    role      varchar(50)                  null,
+    status    int                          null,
+    phone     varchar(20)                  null,
+    email     varchar(100)                 null,
+    address   varchar(200) charset utf8mb3 null,
+    constraint username
+    unique (username)
+    );
+
+create table if not exists PROJECT
+(
+    id           varchar(255) not null
+    primary key,
+    avatar       varchar(255) null,
+    city_id      int          null,
+    content      longtext     null,
+    created_by   varchar(255) null,
+    created_date datetime(6)  null,
+    end_date     datetime(6)  null,
+    start_date   datetime(6)  null,
+    status       int          null,
+    title        varchar(255) null,
+    description  text         null,
+    type         int          null,
+    money        int          null,
+    constraint PROJECT_CITY_id_fk
+    foreign key (city_id) references CITY (id),
+    constraint PROJECT_USER_username_fk
+    foreign key (created_by) references USER (username)
     );
 
 create table if not exists DONATE
@@ -24,55 +81,8 @@ create table if not exists DONATE
     method_donate int                          null,
     comment       text                         null,
     image         text                         null,
-    type          int                          null
-    );
-
-create table if not exists MAP
-(
-    id      int auto_increment
-    primary key,
-    path    longtext null,
-    city_id int      null
+    type          int                          null,
+    constraint DONATE_PROJECT_id_fk
+    foreign key (project_id) references PROJECT (id)
 );
-
-create table if not exists PROJECT
-(
-    id           varchar(255) not null
-    primary key,
-    avatar       varchar(255) null,
-    city_id      int          null,
-    content      longtext     null,
-    created_by   varchar(255) null,
-    created_date datetime(6)  null,
-    end_date     datetime(6)  null,
-    start_date   datetime(6)  null,
-    status       int          null,
-    title        varchar(255) null,
-    description  text         null,
-    type         int          null,
-    money        int          null
-    );
-
-create table if not exists REGION
-(
-    id   int auto_increment
-    primary key,
-    name varchar(255) charset utf8mb3 null
-    );
-
-create table if not exists USER
-(
-    id        varchar(255)                 not null
-    primary key,
-    username  varchar(255)                 null,
-    password  text                         null,
-    full_name varchar(255) charset utf8mb3 null,
-    role      varchar(50)                  null,
-    status    int                          null,
-    phone     varchar(20)                  null,
-    email     varchar(100)                 null,
-    address   varchar(200) charset utf8mb3 null,
-    constraint username
-    unique (username)
-    );
 
