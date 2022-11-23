@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +38,12 @@ public class ProjectService {
         if (Objects.nonNull(limit)) {
             pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
         }
-        return  this.projectDAO.findApprovedProject(pageable);
+        return this.projectDAO.findApprovedProject(pageable)
+            .stream()
+            .peek(project -> {
+                BigDecimal total = this.donateDAO.sumTotalByProjectId(project.getId());
+                project.setTotal(total);
+            }).collect(Collectors.toList());
     }
 
     public ProjectModel findById(String projectId) {

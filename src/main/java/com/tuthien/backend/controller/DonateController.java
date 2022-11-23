@@ -60,4 +60,9 @@ public class DonateController {
                 .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 .body(new InputStreamResource(inputStream));
     }
+
+    @GetMapping("/donate-and-project")
+    public ResponseEntity getTotalProjectAndDonate() {
+        return ResponseEntity.ok(this.donateService.getTotalProjectAndDonate());
+    }
 }

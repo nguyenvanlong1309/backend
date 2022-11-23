@@ -176,4 +176,11 @@ public class DonateService {
         wb.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
+
+    public DonateModel getTotalProjectAndDonate() {
+        DonateModel donateModel = new DonateModel();
+        donateModel.setCountProject(this.projectDAO.countApprovedProject());
+        donateModel.setTotalDonate(this.donateDAO.sumAllDonate());
+        return donateModel;
+    }
 }

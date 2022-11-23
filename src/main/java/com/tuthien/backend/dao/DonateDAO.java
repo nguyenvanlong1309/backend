@@ -59,4 +59,7 @@ public interface DonateDAO extends JpaRepository<Donate, Long> {
 
     @Query("SELECT SUM(d.money) FROM Donate d WHERE d.projectId = ?1")
     BigDecimal sumTotalByProjectId(String projectId);
+
+    @Query("SELECT SUM(d.money) FROM Donate d")
+    BigDecimal sumAllDonate();
 }
