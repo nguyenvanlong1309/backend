@@ -5,9 +5,13 @@ import com.tuthien.backend.model.DonateModel;
 import com.tuthien.backend.model.ResponseModel;
 import com.tuthien.backend.service.DonateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,9 +39,18 @@ public class DonateController {
 
     @GetMapping("/top-donate")
     public ResponseEntity getTopPersonalDonate(
-            @RequestParam Integer type,
-            @RequestParam(defaultValue = "10") Integer limit)
-    {
-        return ResponseEntity.ok(this.donateService.getTopDonate(type, limit));
+            @RequestParam(required = false) Integer type,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String projectId
+    ) {
+        return ResponseEntity.ok(this.donateService.getTopDonate(type, limit, projectId));
+    }
+
+    @PostMapping("/export")
+    public ResponseEntity exportExcelFile(@RequestBody DonateModel donateModel) throws IOException {
+        ByteArrayInputStream inputStream = this.donateService.exportExcelFile(donateModel);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(new InputStreamResource(inputStream));
     }
 }

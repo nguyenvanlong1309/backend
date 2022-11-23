@@ -31,11 +31,12 @@ public class SecurityConfig {
 
         httpSecurity.cors().and().csrf().disable()
                 .authorizeHttpRequests()
-                .antMatchers("/auth/regis-user", "/auth/login").permitAll()
+                .antMatchers("/auth/regis-user", "/auth/login", "/auth/forget-password").permitAll()
                 .antMatchers("/cities/**").permitAll()
                 .antMatchers("/images/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/projects", "/projects/{projectId}").permitAll()
                 .antMatchers(HttpMethod.POST, "/donates/**").permitAll()
+                .antMatchers("/donates/top-donate", "/donates/project/{projectId}").permitAll()
                 .antMatchers("/maps/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest()

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -50,10 +51,14 @@ public class AuthController {
 
         try {
             authenticate = this.authenticationManager.authenticate(authenticationToken);
-        }  catch (BadCredentialsException badCredentialsException) {
+        } catch (BadCredentialsException badCredentialsException) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseModel<>(HttpStatus.BAD_REQUEST, null, "Tài khoản hoặc mật khẩu không đúng"));
+        } catch (LockedException exception) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseModel<>(HttpStatus.BAD_REQUEST, null, "Tài khoản đã bị khóa. Liên hệ với admin để mở."));
         }
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
@@ -73,6 +78,12 @@ public class AuthController {
     @PostMapping("/change-password")
     public ResponseEntity changePassword(@RequestBody ChangePasswordModel changePasswordModel) {
         ResponseModel responseModel = this.userService.changePassword(changePasswordModel);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @PostMapping("/forget-password")
+    public ResponseEntity forgetPassword(@RequestBody UserModel userModel) {
+        ResponseModel responseModel = this.userService.forgetPassword(userModel);
         return ResponseEntity.ok(responseModel);
     }
 }

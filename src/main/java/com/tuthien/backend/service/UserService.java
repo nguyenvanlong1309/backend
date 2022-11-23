@@ -24,7 +24,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +37,8 @@ public class UserService implements UserDetailsService {
     private final ObjectMapper objectMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final MailService mailService;
 
     public List<UserResponse> findAll() {
         return this.userDAO.findAll().stream()
@@ -159,5 +160,16 @@ public class UserService implements UserDetailsService {
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authenticationToken);
         return new ResponseModel(HttpStatus.OK, null, "Th ành công");
+    }
+
+    public ResponseModel forgetPassword(UserModel userModel) {
+        User user = this.userDAO.findByUsername(userModel.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        String content = "Mật khẩu mới của bạn là: 123456";
+        this.mailService.sendMailAsync(user.getEmail(), content, "LẤY LAI MẬT KHẨU");
+        user.setPassword(this.passwordEncoder.encode("123456"));
+        this.userDAO.save(user);
+        return new ResponseModel(HttpStatus.OK, null, "Thành công");
     }
 }

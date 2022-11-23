@@ -1,14 +1,14 @@
 use TuThien;
 
-create table if not exists TuThien.CITY
+create table if not exists CITY
 (
-id        int auto_increment
-primary key,
-name      varchar(100) charset utf8mb3 null,
-region_id int                          null
-);
+    id        int auto_increment
+    primary key,
+    name      varchar(100) charset utf8mb3 null,
+    region_id int                          null
+    );
 
-create table if not exists TuThien.DONATE
+create table if not exists DONATE
 (
     id            int auto_increment
     primary key,
@@ -27,6 +27,14 @@ create table if not exists TuThien.DONATE
     type          int                          null
     );
 
+create table if not exists MAP
+(
+    id      int auto_increment
+    primary key,
+    path    longtext null,
+    city_id int      null
+);
+
 create table if not exists PROJECT
 (
     id           varchar(255) not null
@@ -40,7 +48,16 @@ create table if not exists PROJECT
     start_date   datetime(6)  null,
     status       int          null,
     title        varchar(255) null,
-    description  text         null
+    description  text         null,
+    type         int          null,
+    money        int          null
+    );
+
+create table if not exists REGION
+(
+    id   int auto_increment
+    primary key,
+    name varchar(255) charset utf8mb3 null
     );
 
 create table if not exists USER
@@ -57,12 +74,5 @@ create table if not exists USER
     address   varchar(200) charset utf8mb3 null,
     constraint username
     unique (username)
-);
+    );
 
-create table if not exists TuThien.MAP
-(
-    id      int auto_increment
-    primary key,
-    path    longtext null,
-    city_id int      null
-);
