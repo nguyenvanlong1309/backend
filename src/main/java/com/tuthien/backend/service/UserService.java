@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
                 .withUsername(username)
                 .password(user.getPassword())
                 .authorities(user.getRole())
-                .disabled(UserStatus.INACTIVE.getStatus() == user.getStatus())
+                .accountLocked(!UserStatus.ACTIVE.getStatus().equals(user.getStatus()))
                 .roles(user.getRole())
                 .build();
     }
