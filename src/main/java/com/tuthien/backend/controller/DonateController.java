@@ -37,13 +37,20 @@ public class DonateController {
         return ResponseEntity.ok(this.donateService.getMyDonate());
     }
 
-    @GetMapping("/top-donate")
+    @GetMapping("/list-donate")
     public ResponseEntity getTopPersonalDonate(
+            @RequestParam(required = false) String projectId
+    ) {
+        return ResponseEntity.ok(this.donateService.getTopDonate(projectId));
+    }
+
+    @GetMapping("/top-donate2")
+    public ResponseEntity getTopPersonalDonate2(
             @RequestParam(required = false) Integer type,
             @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) String projectId
     ) {
-        return ResponseEntity.ok(this.donateService.getTopDonate(type, limit, projectId));
+        return ResponseEntity.ok(this.donateService.getTopDonate2(type, limit, projectId));
     }
 
     @PostMapping("/export")
@@ -52,5 +59,10 @@ public class DonateController {
         return ResponseEntity.ok()
                 .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 .body(new InputStreamResource(inputStream));
+    }
+
+    @GetMapping("/donate-and-project")
+    public ResponseEntity getTotalProjectAndDonate() {
+        return ResponseEntity.ok(this.donateService.getTotalProjectAndDonate());
     }
 }

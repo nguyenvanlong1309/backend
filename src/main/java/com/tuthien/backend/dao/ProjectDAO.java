@@ -37,4 +37,7 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
             " JOIN User u ON u.username = p.createdBy" +
             " WHERE p.status = 0 AND (p.endDate > current_date OR p.type = 1) ")
     List<ProjectModel> findPendingProject();
+
+    @Query("SELECT COUNT(p) FROM Project p WHERE p.status <> 0")
+    Long countApprovedProject();
 }

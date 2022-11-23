@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .antMatchers("/images/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/projects", "/projects/{projectId}").permitAll()
                 .antMatchers(HttpMethod.POST, "/donates/**").permitAll()
-                .antMatchers("/donates/top-donate", "/donates/project/{projectId}").permitAll()
+                .antMatchers("/donates/top-donate", "/donates/project/{projectId}", "/donates/donate-and-project").permitAll()
                 .antMatchers("/maps/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest()
