@@ -13,6 +13,7 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
 
     List<Project> findByCreatedBy(String username);
 
+    @Query("SELECT p FROM Project p WHERE p.status <> 0 AND p.endDate = ?1")
     List<Project> findByEndDate(Date endDate);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p)" +

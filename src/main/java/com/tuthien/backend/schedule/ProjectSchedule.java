@@ -5,6 +5,8 @@ import com.tuthien.backend.dao.DonateDAO;
 import com.tuthien.backend.dao.ProjectDAO;
 import com.tuthien.backend.entity.Project;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +14,11 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectSchedule {
 
     private final ProjectDAO projectDAO;
@@ -22,10 +26,11 @@ public class ProjectSchedule {
 
     @Scheduled(cron = "${spring.schedule.cron}")
     public void updateEndedProject() {
+        log.info("start schedule update ended project");
         List<Project> projects = this.projectDAO.findByEndDate(new Date());
         projects.forEach(project -> {
             BigDecimal totalMoney = this.donateDAO.sumTotalByProjectId(project.getId());
-            if (totalMoney.compareTo(project.getMoney()) == -1) {
+            if (Objects.isNull(totalMoney) || totalMoney.compareTo(project.getMoney()) == -1) {
                 project.setStatus(ProjectStatus.CANCEL.getStatus());
             } else {
                 project.setStatus(ProjectStatus.DONE.getStatus());
