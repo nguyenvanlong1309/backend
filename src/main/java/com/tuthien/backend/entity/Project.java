@@ -12,7 +12,7 @@ import java.util.Date;
 public class Project {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "project_id")
     private String id;
 
     @Column(name = "title")
@@ -24,7 +24,7 @@ public class Project {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "created_by")
+    @Column(name = "username")
     private String createdBy;
 
     @Column(name = "city_id")
