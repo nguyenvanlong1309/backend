@@ -91,12 +91,19 @@ public class UserService implements UserDetailsService {
         this.userDAO.findByPhone(userModel.getPhone())
                 .ifPresent((u) -> new IllegalArgumentException("SĐT đã tồn tại"));
 
+        this.userDAO.findByEmail(userModel.getEmail())
+            .ifPresent((u) -> {
+                throw new IllegalArgumentException("Email đã tồn tại");
+            });
+
         String encodedPassword = this.passwordEncoder.encode(userModel.getPassword());
         User user = this.objectMapper.convertValue(userModel, User.class);
         user.setId(UUID.randomUUID().toString());
         user.setPassword(encodedPassword);
         user.setStatus(UserStatus.ACTIVE.getStatus());
-        user.setRole("USER");
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            user.setRole("USER");
+        }
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null);
     }

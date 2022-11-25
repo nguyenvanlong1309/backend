@@ -38,10 +38,8 @@ public class DonateController {
     }
 
     @GetMapping("/list-donate")
-    public ResponseEntity getTopPersonalDonate(
-            @RequestParam(required = false) String projectId
-    ) {
-        return ResponseEntity.ok(this.donateService.getTopDonate(projectId));
+    public ResponseEntity getTopPersonalDonate() {
+        return ResponseEntity.ok(this.donateService.getTopDonate());
     }
 
     @GetMapping("/top-donate2")
@@ -54,8 +52,8 @@ public class DonateController {
     }
 
     @PostMapping("/export")
-    public ResponseEntity exportExcelFile(@RequestBody DonateModel donateModel) throws IOException {
-        ByteArrayInputStream inputStream = this.donateService.exportExcelFile(donateModel);
+    public ResponseEntity exportExcelFile() throws IOException {
+        ByteArrayInputStream inputStream = this.donateService.exportExcelFile();
         return ResponseEntity.ok()
                 .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                 .body(new InputStreamResource(inputStream));
