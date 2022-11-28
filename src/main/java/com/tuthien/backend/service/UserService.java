@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return this.getUserByUsername(userDetails.getUsername());
-        } catch (UsernameNotFoundException ex) {
+        } catch (Exception ex) {
             return null;
         }
     }
