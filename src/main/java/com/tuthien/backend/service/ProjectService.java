@@ -77,7 +77,7 @@ public class ProjectService {
         if (Objects.nonNull(projectModel.getId())) {
             Project project = this.projectDAO.findById(projectModel.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
-            if (Objects.nonNull(project.getEndDate()) && new Date().before(project.getEndDate())) {
+            if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
                 throw new IllegalArgumentException("Dự án đã hết hạn");
             }
             projectModel.setCreatedDate(project.getCreatedDate());
