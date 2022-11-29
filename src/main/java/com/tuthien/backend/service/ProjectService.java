@@ -92,7 +92,9 @@ public class ProjectService {
         if (Objects.isNull(project.getId())) {
             project.setId(project.getCityId() +"_"+ UUID.randomUUID());
         }
-        project.setCreatedBy(user.getUsername());
+        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
+            project.setCreatedBy(user.getUsername());
+        }
         this.projectDAO.save(project);
         return new ResponseModel<>(HttpStatus.OK, null, "Thanh cong");
     }

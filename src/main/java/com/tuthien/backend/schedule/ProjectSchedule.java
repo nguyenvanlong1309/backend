@@ -27,7 +27,10 @@ public class ProjectSchedule {
     @Scheduled(cron = "${spring.schedule.cron}")
     public void updateEndedProject() {
         log.info("start schedule update ended project");
-        List<Project> projects = this.projectDAO.findByEndDate(new Date());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        System.out.println(calendar.getTime());
+        List<Project> projects = this.projectDAO.findByEndDate(calendar.getTime());
         projects.forEach(project -> {
             BigDecimal totalMoney = this.donateDAO.sumTotalByProjectId(project.getId());
             if (Objects.isNull(totalMoney) || totalMoney.compareTo(project.getMoney()) == -1) {
