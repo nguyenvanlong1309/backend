@@ -29,7 +29,6 @@ public class ProjectSchedule {
         log.info("start schedule update ended project");
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
-        System.out.println(calendar.getTime());
         List<Project> projects = this.projectDAO.findByEndDate(calendar.getTime());
         projects.forEach(project -> {
             BigDecimal totalMoney = this.donateDAO.sumTotalByProjectId(project.getId());

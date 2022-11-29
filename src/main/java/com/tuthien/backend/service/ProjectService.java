@@ -67,6 +67,7 @@ public class ProjectService {
 
     @Transactional
     public ResponseModel<ProjectModel> saveProject(ProjectModel projectModel) {
+        User user = this.userService.getSessionUser();
         if (Objects.nonNull(projectModel.getAvatarFile())) {
             String imageName = this.ioService.saveImageToStore(projectModel.getAvatarFile())
                     .orElseThrow(() -> new IllegalArgumentException("Có lỗi xảy ra trong quá trình lưu ảnh"));
@@ -80,20 +81,25 @@ public class ProjectService {
             if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
                 throw new IllegalArgumentException("Dự án đã hết hạn");
             }
+
+            if (!"ADMIN".equalsIgnoreCase(user.getRole()) && !project.getCreatedBy().equals(user.getUsername())) {
+                throw new IllegalArgumentException("Bạn không có quyền chỉnh sửa dự án");
+            }
+
             projectModel.setCreatedDate(project.getCreatedDate());
             projectModel.setStatus(project.getStatus());
+            projectModel.setCreatedBy(project.getCreatedBy());
             if (Objects.isNull(projectModel.getAvatar())) {
                 projectModel.setAvatar(project.getAvatar());
             }
+        } else {
+            projectModel.setCreatedBy(user.getUsername());
         }
 
-        User user = this.userService.getSessionUser();
+
         Project project = this.objectMapper.convertValue(projectModel, Project.class);
         if (Objects.isNull(project.getId())) {
             project.setId(project.getCityId() +"_"+ UUID.randomUUID());
-        }
-        if (!"ADMIN".equalsIgnoreCase(user.getRole())) {
-            project.setCreatedBy(user.getUsername());
         }
         this.projectDAO.save(project);
         return new ResponseModel<>(HttpStatus.OK, null, "Thanh cong");
