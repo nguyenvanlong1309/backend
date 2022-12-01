@@ -96,14 +96,21 @@ public class UserService implements UserDetailsService {
                 throw new IllegalArgumentException("Email đã tồn tại");
             });
 
+        User sessionUser = this.getSessionUser();
         String encodedPassword = this.passwordEncoder.encode(userModel.getPassword());
         User user = this.objectMapper.convertValue(userModel, User.class);
         user.setId(UUID.randomUUID().toString());
         user.setPassword(encodedPassword);
         user.setStatus(UserStatus.ACTIVE.getStatus());
-        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-            user.setRole("USER");
+        
+        // Nếu user đang đăng nhập không phải là admin
+        //  và user được thêm mới với quyền admin thì quyền sẽ chuyển thành USER
+        if (!"ADMIN".equalsIgnoreCase(sessionUser.getRole())) {
+            if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                user.setRole("USER");
+            }
         }
+
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null);
     }

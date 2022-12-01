@@ -34,6 +34,8 @@ public class ProjectModel implements Serializable {
     private BigDecimal total;
     private Integer type;
     private BigDecimal money;
+    private Date modifiedDate;
+    private String modifier;
 
     @JsonIgnore
     private MultipartFile avatarFile;
@@ -58,6 +60,8 @@ public class ProjectModel implements Serializable {
         this.description = project.getDescription();
         this.money = project.getMoney();
         this.type = project.getType();
+        this.modifiedDate = project.getModifiedDate();
+        this.modifier = project.getModifier();
     }
 
     public String getStatusName() {

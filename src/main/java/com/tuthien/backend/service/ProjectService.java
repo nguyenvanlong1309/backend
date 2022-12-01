@@ -86,6 +86,8 @@ public class ProjectService {
                 throw new IllegalArgumentException("Bạn không có quyền chỉnh sửa dự án");
             }
 
+            projectModel.setModifiedDate(new Date());
+            projectModel.setModifier(user.getUsername());
             projectModel.setCreatedDate(project.getCreatedDate());
             projectModel.setStatus(project.getStatus());
             projectModel.setCreatedBy(project.getCreatedBy());

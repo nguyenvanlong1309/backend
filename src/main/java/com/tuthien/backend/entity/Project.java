@@ -53,4 +53,11 @@ public class Project {
 
     @Column(name = "money")
     private BigDecimal money;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified_date")
+    private Date modifiedDate;
+
+    @Column(name = "modifier")
+    private String modifier;
 }
