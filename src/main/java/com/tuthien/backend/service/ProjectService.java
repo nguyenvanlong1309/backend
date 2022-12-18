@@ -78,6 +78,11 @@ public class ProjectService {
         if (Objects.nonNull(projectModel.getId())) {
             Project project = this.projectDAO.findById(projectModel.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bài viết"));
+
+            if (ProjectStatus.LOCKED.getStatus() == project.getStatus()) {
+                throw new IllegalArgumentException("Dự án đã bị khóa. Không thể chỉnh sửa");
+            }
+
             if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
                 throw new IllegalArgumentException("Dự án đã hết hạn");
             }
@@ -121,8 +126,25 @@ public class ProjectService {
         if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
             throw new IllegalArgumentException("Dự án đã kết thúc");
         }
-
+        User sessionUser = this.userService.getSessionUser();
+        project.setModifier(sessionUser.getUsername());
+        project.setModifiedDate(new Date());
         project.setStatus(ProjectStatus.DOING.getStatus());
+        this.projectDAO.save(project);
+        return new ResponseModel(HttpStatus.OK, project, "Thành công");
+    }
+
+    public ResponseModel lockProject(String projectId) {
+        Project project = this.projectDAO.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy project"));
+        if (project.getStatus() != ProjectStatus.DONE.getStatus()) {
+            throw new IllegalArgumentException("Dự án chưa kết thúc, Không thể khóa.");
+        }
+
+        User sessionUser = this.userService.getSessionUser();
+        project.setModifier(sessionUser.getUsername());
+        project.setModifiedDate(new Date());
+        project.setStatus(ProjectStatus.LOCKED.getStatus());
         this.projectDAO.save(project);
         return new ResponseModel(HttpStatus.OK, project, "Thành công");
     }
