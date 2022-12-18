@@ -18,7 +18,7 @@ public class BackEndApplication {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) { 
 		SpringApplication.run(BackEndApplication.class, args);
 	}
 
