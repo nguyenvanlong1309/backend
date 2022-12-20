@@ -18,7 +18,7 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p)" +
             " FROM Project p" +
-            " WHERE p.cityId = ?1")
+            " WHERE p.cityId = ?1 AND p.status <> 0")
     List<ProjectModel> findByCityId(Integer cityId);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p, u)" +
