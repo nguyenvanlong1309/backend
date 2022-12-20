@@ -24,7 +24,7 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p, u)" +
             " FROM Project p" +
             " JOIN User u ON u.username = p.createdBy" +
-            " WHERE p.status <> 0")
+            " WHERE p.status <> 0 AND p.status <> 5")
     List<ProjectModel> findApprovedProject(Pageable pageable);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p)" +

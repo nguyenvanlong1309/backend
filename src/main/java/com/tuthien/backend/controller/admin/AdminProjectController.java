@@ -1,6 +1,5 @@
 package com.tuthien.backend.controller.admin;
 
-import com.tuthien.backend.model.ProjectModel;
 import com.tuthien.backend.model.ResponseModel;
 import com.tuthien.backend.model.UserModel;
 import com.tuthien.backend.service.ProjectService;
@@ -18,6 +17,12 @@ public class AdminProjectController {
     @GetMapping("/approve/{projectId}")
     public ResponseEntity approveProject(@PathVariable String projectId) {
         ResponseModel responseModel = this.projectService.approveProject(projectId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @GetMapping("/lock/{projectId}")
+    public ResponseEntity lockProject(@PathVariable String projectId) {
+        ResponseModel responseModel = this.projectService.lockProject(projectId);
         return ResponseEntity.ok(responseModel);
     }
 
