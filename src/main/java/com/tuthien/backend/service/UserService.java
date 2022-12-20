@@ -27,6 +27,7 @@ import org.springframework.validation.FieldError;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -105,7 +106,7 @@ public class UserService implements UserDetailsService {
         
         // Nếu user đang đăng nhập không phải là admin
         //  và user được thêm mới với quyền admin thì quyền sẽ chuyển thành USER
-        if (!"ADMIN".equalsIgnoreCase(sessionUser.getRole())) {
+        if (Objects.isNull(sessionUser) || !"ADMIN".equalsIgnoreCase(sessionUser.getRole())) {
             if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                 user.setRole("USER");
             }
@@ -173,7 +174,7 @@ public class UserService implements UserDetailsService {
         );
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authenticationToken);
-        return new ResponseModel(HttpStatus.OK, null, "Th ành công");
+        return new ResponseModel(HttpStatus.OK, null, "Thành công");
     }
 
     public ResponseModel forgetPassword(UserModel userModel) {
