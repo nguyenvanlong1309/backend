@@ -134,6 +134,24 @@ public class ProjectService {
         return new ResponseModel(HttpStatus.OK, project, "Thành công");
     }
 
+    public ResponseModel cancelProject(String projectId) {
+        Project project = this.projectDAO.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy project"));
+        if (project.getStatus() != ProjectStatus.PENDING.getStatus()) {
+            throw new IllegalArgumentException("Không thể hủy project này.");
+        }
+
+        if (Objects.nonNull(project.getEndDate()) && new Date().after(project.getEndDate())) {
+            throw new IllegalArgumentException("Dự án đã kết thúc");
+        }
+        User sessionUser = this.userService.getSessionUser();
+        project.setModifier(sessionUser.getUsername());
+        project.setModifiedDate(new Date());
+        project.setStatus(ProjectStatus.CANCEL.getStatus());
+        this.projectDAO.save(project);
+        return new ResponseModel(HttpStatus.OK, project, "Thành công");
+    }
+
     public ResponseModel lockProject(String projectId) {
         Project project = this.projectDAO.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy project"));

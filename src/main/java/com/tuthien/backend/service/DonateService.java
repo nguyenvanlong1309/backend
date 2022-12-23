@@ -189,6 +189,7 @@ public class DonateService {
         DonateModel donateModel = new DonateModel();
         donateModel.setCountProject(this.projectDAO.countApprovedProject());
         donateModel.setTotalDonate(this.donateDAO.sumAllDonate());
+        donateModel.setCountProvince(this.projectDAO.findByGroupByCityId().size());
         return donateModel;
     }
 }

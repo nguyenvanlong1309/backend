@@ -124,21 +124,17 @@ public class UserService implements UserDetailsService {
         userModel.setStatus(_user.getStatus());
         userModel.setUsername(_user.getUsername());
 
-        if (StringUtils.hasText(userModel.getPhone())) {
-            this.userDAO.findByPhone(userModel.getPhone())
-                    .filter(u -> !u.getId().equals(_user.getId()))
-                    .ifPresent((u) -> {
-                        throw new IllegalArgumentException("SĐT đã tồn tại");
-                    });
-        }
-
-        if (StringUtils.hasText(userModel.getEmail())) {
-            this.userDAO.findByEmail(userModel.getEmail())
-                    .filter(u -> !u.getId().equals(_user.getId()))
-                    .ifPresent((u) -> {
-                        throw new IllegalArgumentException("Email đã tồn tại");
-                    });
-        }
+        this.userDAO.findByPhone(userModel.getPhone())
+                .filter(u -> !u.getId().equals(_user.getId()))
+                .ifPresent((u) -> {
+                    throw new IllegalArgumentException("SĐT đã tồn tại");
+                });
+                
+        this.userDAO.findByEmail(userModel.getEmail())
+                .filter(u -> !u.getId().equals(_user.getId()))
+                .ifPresent((u) -> {
+                    throw new IllegalArgumentException("Email đã tồn tại");
+                });
 
         User user = this.objectMapper.convertValue(userModel, User.class);
         User sessionUser = this.getSessionUser();

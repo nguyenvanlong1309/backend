@@ -20,6 +20,12 @@ public class AdminProjectController {
         return ResponseEntity.ok(responseModel);
     }
 
+    @GetMapping("/cancel/{projectId}")
+    public ResponseEntity cancelProject(@PathVariable String projectId) {
+        ResponseModel responseModel = this.projectService.cancelProject(projectId);
+        return ResponseEntity.ok(responseModel);
+    }
+
     @GetMapping("/lock/{projectId}")
     public ResponseEntity lockProject(@PathVariable String projectId) {
         ResponseModel responseModel = this.projectService.lockProject(projectId);
