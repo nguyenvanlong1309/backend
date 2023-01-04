@@ -39,16 +39,20 @@ public class ProjectService {
             pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
         }
         return this.projectDAO.findApprovedProject(pageable)
-            .stream()
-            .peek(project -> {
-                BigDecimal total = this.donateDAO.sumTotalByProjectId(project.getId());
-                project.setTotal(total);
-            }).collect(Collectors.toList());
+                .stream()
+                .peek(project -> {
+                    BigDecimal total = this.donateDAO.sumTotalByProjectId(project.getId());
+                    project.setTotal(total);
+                }).collect(Collectors.toList());
     }
 
     public ProjectModel findById(String projectId) {
-        Project project = this.projectDAO.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy dự án"));
-        return this.objectMapper.convertValue(project, ProjectModel.class);
+        Project project = this.projectDAO.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy dự án"));
+        ProjectModel p = this.objectMapper.convertValue(project, ProjectModel.class);
+        BigDecimal total = this.donateDAO.sumTotalByProjectId(project.getId());
+        p.setTotal(total);
+        return p;
     }
 
     public List<ProjectModel> findMyProject() {
@@ -90,7 +94,7 @@ public class ProjectService {
         User user = this.userService.getSessionUser();
         Project project = this.objectMapper.convertValue(projectModel, Project.class);
         if (Objects.isNull(project.getId())) {
-            project.setId(project.getCityId() +"_"+ UUID.randomUUID());
+            project.setId(project.getCityId() + "_" + UUID.randomUUID());
         }
         project.setCreatedBy(user.getUsername());
         this.projectDAO.save(project);

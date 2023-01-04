@@ -96,7 +96,6 @@ public class UserService implements UserDetailsService {
         user.setId(UUID.randomUUID().toString());
         user.setPassword(encodedPassword);
         user.setStatus(UserStatus.ACTIVE.getStatus());
-        user.setRole("USER");
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null);
     }
@@ -145,7 +144,8 @@ public class UserService implements UserDetailsService {
     @Transactional
     public ResponseModel changePassword(ChangePasswordModel changePasswordModel) {
         User currentUser = this.getSessionUser();
-        boolean matches = this.passwordEncoder.matches(changePasswordModel.getCurrentPassword(), currentUser.getPassword());
+        boolean matches = this.passwordEncoder.matches(changePasswordModel.getCurrentPassword(),
+                currentUser.getPassword());
         if (!matches) {
             throw new IllegalArgumentException("Mật khẩu hiện tại không đúng");
         }
@@ -155,8 +155,7 @@ public class UserService implements UserDetailsService {
 
         UserDetails userDetails = this.loadUserByUsername(currentUser.getUsername());
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities()
-        );
+                userDetails, null, userDetails.getAuthorities());
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authenticationToken);
         return new ResponseModel(HttpStatus.OK, null, "Th ành công");
@@ -166,9 +165,11 @@ public class UserService implements UserDetailsService {
         User user = this.userDAO.findByUsername(userModel.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
 
-        String content = "Mật khẩu mới của bạn là: 123456";
+        String newPass = ((int) (Math.random() * 899999 + 100000)) + "";
+
+        String content = "Mật khẩu mới của bạn là: " + newPass;
         this.mailService.sendMailAsync(user.getEmail(), content, "LẤY LAI MẬT KHẨU");
-        user.setPassword(this.passwordEncoder.encode("123456"));
+        user.setPassword(this.passwordEncoder.encode(newPass));
         this.userDAO.save(user);
         return new ResponseModel(HttpStatus.OK, null, "Thành công");
     }
