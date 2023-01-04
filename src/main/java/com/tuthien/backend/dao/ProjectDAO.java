@@ -13,17 +13,18 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
 
     List<Project> findByCreatedBy(String username);
 
+    @Query("SELECT p FROM Project p WHERE p.status <> 0 AND p.endDate = ?1")
     List<Project> findByEndDate(Date endDate);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p)" +
             " FROM Project p" +
-            " WHERE p.cityId = ?1")
+            " WHERE p.cityId = ?1 AND p.status NOT IN (0,4,5)")
     List<ProjectModel> findByCityId(Integer cityId);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p, u)" +
             " FROM Project p" +
             " JOIN User u ON u.username = p.createdBy" +
-            " WHERE p.status <> 0")
+            " WHERE p.status NOT IN (0,4,5)")
     List<ProjectModel> findApprovedProject(Pageable pageable);
 
     @Query("SELECT new com.tuthien.backend.model.ProjectModel(p)" +
@@ -40,4 +41,7 @@ public interface ProjectDAO extends JpaRepository<Project, String> {
 
     @Query("SELECT COUNT(p) FROM Project p WHERE p.status <> 0")
     Long countApprovedProject();
+
+    @Query("SELECT p FROM Project p WHERE p.status NOT IN (0,4) GROUP BY p.cityId")
+    List<Project> findByGroupByCityId();
 }

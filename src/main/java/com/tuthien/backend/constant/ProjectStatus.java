@@ -13,7 +13,8 @@ public enum ProjectStatus {
     DONE(1, "Đã hoàn thành"),
     DOING(2, "Đang vận động"),
     EXPIRED(3, "Sắp hết hạn"),
-    CANCEL(4, "Hủy bỏ");
+    CANCEL(4, "Hủy bỏ"),
+    LOCKED(5, "Khóa");
 
     final int status;
     final String desc;

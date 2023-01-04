@@ -31,6 +31,7 @@ public class DonateModel implements Serializable {
     private Integer type;
     private Long countProject;
     private BigDecimal totalDonate;
+    private Integer countProvince;
 
     public DonateModel(Donate donate, Project project) {
         this.id = donate.getId();

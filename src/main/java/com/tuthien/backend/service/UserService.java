@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,7 @@ public class UserService implements UserDetailsService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return this.getUserByUsername(userDetails.getUsername());
-        } catch (UsernameNotFoundException ex) {
+        } catch (Exception ex) {
             return null;
         }
     }
@@ -91,6 +92,12 @@ public class UserService implements UserDetailsService {
         this.userDAO.findByPhone(userModel.getPhone())
                 .ifPresent((u) -> new IllegalArgumentException("SĐT đã tồn tại"));
 
+        this.userDAO.findByEmail(userModel.getEmail())
+                .ifPresent((u) -> {
+                    throw new IllegalArgumentException("Email đã tồn tại");
+                });
+
+        User sessionUser = this.getSessionUser();
         String encodedPassword = this.passwordEncoder.encode(userModel.getPassword());
         User user = this.objectMapper.convertValue(userModel, User.class);
         user.setId(UUID.randomUUID().toString());
@@ -108,21 +115,17 @@ public class UserService implements UserDetailsService {
         userModel.setStatus(_user.getStatus());
         userModel.setUsername(_user.getUsername());
 
-        if (StringUtils.hasText(userModel.getPhone())) {
-            this.userDAO.findByPhone(userModel.getPhone())
-                    .filter(u -> !u.getId().equals(_user.getId()))
-                    .ifPresent((u) -> {
-                        throw new IllegalArgumentException("SĐT đã tồn tại");
-                    });
-        }
+        this.userDAO.findByPhone(userModel.getPhone())
+                .filter(u -> !u.getId().equals(_user.getId()))
+                .ifPresent((u) -> {
+                    throw new IllegalArgumentException("SĐT đã tồn tại");
+                });
 
-        if (StringUtils.hasText(userModel.getEmail())) {
-            this.userDAO.findByEmail(userModel.getEmail())
-                    .filter(u -> !u.getId().equals(_user.getId()))
-                    .ifPresent((u) -> {
-                        throw new IllegalArgumentException("Email đã tồn tại");
-                    });
-        }
+        this.userDAO.findByEmail(userModel.getEmail())
+                .filter(u -> !u.getId().equals(_user.getId()))
+                .ifPresent((u) -> {
+                    throw new IllegalArgumentException("Email đã tồn tại");
+                });
 
         User user = this.objectMapper.convertValue(userModel, User.class);
         User sessionUser = this.getSessionUser();
@@ -158,7 +161,7 @@ public class UserService implements UserDetailsService {
                 userDetails, null, userDetails.getAuthorities());
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authenticationToken);
-        return new ResponseModel(HttpStatus.OK, null, "Th ành công");
+        return new ResponseModel(HttpStatus.OK, null, "Thành công");
     }
 
     public ResponseModel forgetPassword(UserModel userModel) {

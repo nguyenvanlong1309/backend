@@ -87,15 +87,15 @@ public class DonateService {
             donateModel.setImage(avatar);
         }
         donateModel.setType(DonateType.BUSINESS.getType());
-        donateModel.setMode(1);
+        donateModel.setMode(0);
         Donate donate = this.objectMapper.convertValue(donateModel, Donate.class);
         donate.setCreatedDate(new Date());
         donate = this.donateDAO.save(donate);
         return new ResponseModel<>(HttpStatus.OK, donate, "Thành công");
     }
 
-    public List<Map<String, Object>> getTopDonate(String projectId) {
-        return this.donateDAO.findListDonate(projectId);
+    public List<Map<String, Object>> getTopDonate() {
+        return this.donateDAO.findListDonate();
     }
 
 
@@ -115,7 +115,7 @@ public class DonateService {
                 }).collect(Collectors.toList());
     }
 
-    public ByteArrayInputStream exportExcelFile(DonateModel donateModel) throws IOException {
+    public ByteArrayInputStream exportExcelFile() throws IOException {
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet();
         sheet.setColumnWidth(0, 7500);
@@ -127,22 +127,26 @@ public class DonateService {
         Row rowHeader = sheet.createRow(0);
         Cell publicNameCell = rowHeader.createCell(0);
         publicNameCell.setCellStyle(headerStyle);
-        publicNameCell.setCellValue("Tên");
+        publicNameCell.setCellValue("Tên người tài trợ");
 
-        Cell createdDateCell = rowHeader.createCell(1);
+        Cell titleCell = rowHeader.createCell(1);
+        titleCell.setCellStyle(headerStyle);
+        titleCell.setCellValue("Tên Dự Án");
+
+        Cell createdDateCell = rowHeader.createCell(2);
         createdDateCell.setCellStyle(headerStyle);
         createdDateCell.setCellValue("Ngày tài trợ");
 
-        Cell totalMoneyCell = rowHeader.createCell(2);
+        Cell totalMoneyCell = rowHeader.createCell(3);
         totalMoneyCell.setCellStyle(headerStyle);
         totalMoneyCell.setCellValue("Số tiền");
 
-        Cell timesCell = rowHeader.createCell(3);
+        Cell timesCell = rowHeader.createCell(4);
         timesCell.setCellStyle(ExcelUtils.getStyleHeader(wb));
         timesCell.setCellValue("Số lần");
 
 
-        List<Map<String, Object>> topDonate = this.getTopDonate(donateModel.getProjectId());
+        List<Map<String, Object>> topDonate = this.getTopDonate();
 
         IntStream.range(0, topDonate.size())
                 .forEach(index -> {
@@ -158,15 +162,19 @@ public class DonateService {
                     nameCell.setCellStyle(cellStyle);
                     nameCell.setCellValue(data.get("publicName").toString());
 
-                    Cell dateCell = row.createCell(1);
+                    Cell titleNameCell = row.createCell(1);
+                    titleNameCell.setCellStyle(cellStyle);
+                    titleNameCell.setCellValue(data.get("title").toString());
+
+                    Cell dateCell = row.createCell(2);
                     dateCell.setCellValue(data.get("createdDate").toString());
                     dateCell.setCellStyle(cellStyle);
 
-                    Cell totalCell = row.createCell(2);
+                    Cell totalCell = row.createCell(3);
                     totalCell.setCellValue(DataUtils.safeToDouble(data.get("total")));
                     totalCell.setCellStyle(cellStyle);
 
-                    Cell countCell = row.createCell(3);
+                    Cell countCell = row.createCell(4);
                     countCell.setCellValue(DataUtils.safeToInt(data.get("count")));
                     countCell.setCellStyle(cellStyle);
                 });
@@ -181,6 +189,7 @@ public class DonateService {
         DonateModel donateModel = new DonateModel();
         donateModel.setCountProject(this.projectDAO.countApprovedProject());
         donateModel.setTotalDonate(this.donateDAO.sumAllDonate());
+        donateModel.setCountProvince(this.projectDAO.findByGroupByCityId().size());
         return donateModel;
     }
 }

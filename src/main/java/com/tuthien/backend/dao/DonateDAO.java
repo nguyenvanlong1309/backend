@@ -32,12 +32,12 @@ public interface DonateDAO extends JpaRepository<Donate, Long> {
     List<DonateModel> findDonateByProject(String projectId);
 
     @Query(nativeQuery = true,
-            value = "SELECT IF(mode = 1, '*********', public_name) publicName, sum(money) total, count(1) count, DATE_FORMAT(created_date, '%d/%m/%Y') createdDate" +
+            value = "SELECT title, IF(mode = 1, '*********', public_name) publicName, sum(DONATE.money) total, count(1) count, DATE_FORMAT(DONATE.created_date, '%d/%m/%Y') createdDate" +
             " FROM DONATE" +
-            " WHERE (?1 IS NULL OR project_id = ?1)" +
-            " GROUP BY publicName, phone, email, createdDate" +
+            " JOIN PROJECT p ON DONATE.project_id = p.project_id" +
+            " GROUP BY title, publicName, phone, email, createdDate" +
             " ORDER BY total DESC")
-    List<Map<String, Object>> findListDonate(String projectId);
+    List<Map<String, Object>> findListDonate();
 
     @Query(nativeQuery = true,
             value = "SELECT IF(mode = 1, '*********', public_name) publicName, sum(money) total, count(1) count" +
