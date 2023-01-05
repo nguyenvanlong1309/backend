@@ -107,7 +107,6 @@ public class ProjectService {
             projectModel.setCreatedBy(user.getUsername());
         }
 
-
         Project project = this.objectMapper.convertValue(projectModel, Project.class);
         if (Objects.isNull(project.getId())) {
             project.setId(project.getCityId() + "_" + UUID.randomUUID());

@@ -26,6 +26,7 @@ public class MailService {
         simpleMailMessage.setText(content);
         simpleMailMessage.setSentDate(new Date());
         mailSender.send(simpleMailMessage);
+
     }
 
 }

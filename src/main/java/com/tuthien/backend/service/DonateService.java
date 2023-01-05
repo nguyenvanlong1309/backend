@@ -98,7 +98,6 @@ public class DonateService {
         return this.donateDAO.findListDonate();
     }
 
-
     public List<Map<String, Object>> getTopDonate2(Integer type, Integer limit, String projectId) {
         Pageable pageable = null;
         if (Objects.nonNull(limit)) {
@@ -145,7 +144,6 @@ public class DonateService {
         timesCell.setCellStyle(ExcelUtils.getStyleHeader(wb));
         timesCell.setCellValue("Số lần");
 
-
         List<Map<String, Object>> topDonate = this.getTopDonate();
 
         IntStream.range(0, topDonate.size())
@@ -154,8 +152,9 @@ public class DonateService {
                     Map<String, Object> data = topDonate.get(index);
 
                     CellStyle cellStyle = ExcelUtils.getBorder(wb);
-                    int bgColor = index % 2 != 0 ? IndexedColors.GREY_25_PERCENT.index : IndexedColors.WHITE.index;;
-                    cellStyle.setFillForegroundColor((short)bgColor);
+                    int bgColor = index % 2 != 0 ? IndexedColors.GREY_25_PERCENT.index : IndexedColors.WHITE.index;
+                    ;
+                    cellStyle.setFillForegroundColor((short) bgColor);
                     cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
                     Cell nameCell = row.createCell(0);
